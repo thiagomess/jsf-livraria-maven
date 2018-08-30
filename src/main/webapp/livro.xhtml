@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head />
+<!-- PARA USO DO AJAX por precisar de JavaScript -->
+
+<ui:composition template="_template.xhtml">
+	<!-- passando parametro do ID na URL  -->
+	<f:metadata>
+		<f:viewParam name="livroId" value="#{livroBean.livroId}" />
+		<f:viewAction action="#{livroBean.carregarLivroPeloId}" if="#{param.livroId != null}"/>
+	</f:metadata>
+ 
+	<ui:define name="titulo">
+		Novo Livro
+	</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="livro">
+			<p:messages id="messages" />
+
+			<p:fieldset legend="Dados do Livro">
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Titulo:" for="titulo" />
+					<p:inputText id="titulo" value="#{livroBean.livro.titulo}"
+						required="true" requiredMessage="Titulo obrigatório"
+						validatorMessage="Título não pode ser maior que 40 caracteres">
+						<f:validateLength maximum="40" />
+						<!--** USANDO AJAX PARA VALIDAR OS CAMPOS PEGANDO O ID DE MENSAGESNS  -->
+						<f:ajax event="blur" render="messages" />
+					</p:inputText>
+        
+					<p:outputLabel value="ISBN:" for="isbn" />
+					<p:inputMask id="isbn" value="#{livroBean.livro.isbn}"
+						validator="#{livroBean.comecaComDigitoUm}"  mask="999-9-99-999999-9">
+						<!--** USANDO AJAX PARA VALIDAR OS CAMPOS PEGANDO O ID DE MENSAGESNS  -->
+						<f:ajax event="keyup" render="messages" />
+					</p:inputMask>
+
+					<p:outputLabel value="Preço:" for="preco" />
+					
+					<p:inputNumber id="preco" symbol="R$ " value="#{livroBean.livro.preco}"   
+                               decimalSeparator="," thousandSeparator="." validatorMessage="O Preço não pode ser menor que R$ 1.00 ou maior que R$ 1000.00">
+
+						<f:validateDoubleRange minimum="1.00" maximum="1000.00" />
+                </p:inputNumber>  
+
+					<p:outputLabel value="Data de Lançamento:" for="dataLancamento" />
+					<p:calendar id="dataLancamento" value="#{livroBean.livro.dataLancamento.time}"  pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" mask="true" >
+						<!-- timeZone="America/Sao_Paulo" configurado no web.xml para pegar da hora do SO-->
+					</p:calendar>
+					 <h:outputScript library="js" name="locale-primefaces.js"/> <!-- Adicionado arquivo JS no webContent/resources/js para aparecer o calendario em portugues -->
+				</h:panelGrid>
+			</p:fieldset>
+			<br />
+			
+			<p:fieldset legend="Dados do Autor">
+			<p:panelGrid columns="4">
+			
+				<p:outputLabel value="Selecione o autor: " for="autor" />
+				<p:selectOneMenu value="#{livroBean.autorId}" id="autor" >
+					<f:selectItems value="#{livroBean.autores}" var="autor"
+						itemLabel="#{autor.nome}" itemValue="#{autor.id}" />
+				</p:selectOneMenu>
+				
+				<!-- No ajax no primefaces o execute vira process e render vira update -->
+				<p:commandButton value="Gravar autor" action="#{livroBean.gravarAutor}" process="@this autor" update="tabelaAutores">
+					<!--** Usando AJAX pegando id do selectOneMenu e o render do id do dataTable-->
+					<!-- <f:ajax execute="autor" render="tabelaAutores" /> -->
+				</p:commandButton>
+				<!--Fazendo redirecionamento para outra pagina mandando a pagina e a sua URL com o paramentro "?faces-redirect=true" -->
+				<h:commandLink value="Cadastrar novo autor" action="autor?faces-redirect=true" immediate="true" />
+			</p:panelGrid>	
+			
+				<p:dataList value="#{livroBean.autoresDoLivro}" var="autor" id="tabelaAutores" emptyMessage="Nenhum autor selecionado" style="width: 752px">
+					<p:column>
+						<h:outputText value="#{autor.nome} " />
+					</p:column>
+					<p:column>
+						<p:commandButton icon="fa fa-fw fa-trash"  action="#{livroBean.removerAutorDoLivro(autor)}" 
+											process="@this" update="tabelaAutores"></p:commandButton>
+					</p:column>
+				</p:dataList>
+			</p:fieldset>
+			
+			<br />
+			<p:fieldset style="text-align:center;">
+				<p:commandButton value="Gravar Livro" action="#{livroBean.gravar}" process="@form" 
+						update="@form  :tabelaDeLivros:tabelaLivros"  />
+			</p:fieldset>
+
+<!-- 			<p:commandButton value="Gravar" action="#{livroBean.gravar}" process="@form" update="@form :tabelaDeLivros:tabelaLivros">
+				** Usando AJAX com @form para submeter apenas o formulario, se quisse submeter a pagina inteira usaria @all  e o render o proprio form @form e o id da Tabela de livros, pois nao esta no mesmo form
+				<f:ajax execute="@form" render="@form :tabelaDeLivros:tabelaLivros" />
+			</p:commandButton> -->
+		</h:form>
+
+		<h:form id="tabelaDeLivros">
+		<br />
+			
+				<p:dataTable id="tabelaLivros" value="#{livroBean.livros}"
+					var="livro" paginator= "true" rows="5" lazy="false">
+					<!--o atributo headerText subtitui o f:facet  -->
+					<f:facet name="header">Livros</f:facet>
+					
+					<!-- Existem outros MatchModes como endsWidth, contains, exact, equals, lte (menos ou igual) e gte (maior ou igual)  -->
+					<p:column headerText="Titulo" sortBy="#{livro.titulo}" filterBy="#{livro.titulo}" filterMatchMode="contains" >
+						<h:outputText value="#{livro.titulo}" />
+					</p:column>
+
+					<p:column headerText="ISBN" sortBy="#{livro.isbn}" filterBy="#{livro.isbn}" filterMatchMode="contains" >
+						<h:outputText value="#{livro.isbn}" />
+					</p:column>
+
+					<p:column headerText="Preço" sortBy="#{livro.preco}" filterBy="#{livro.preco}" filterFunction="#{livroBean.precoEhMenor}" >
+						<h:outputText value="#{livro.preco}">
+							<f:convertNumber type="currency" pattern="R$ 0.00"
+								currencySymbol="R$" locale="pt_BR" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Data" sortBy="#{livro.dataLancamento.time}" filterBy="#{livro.dataLancamento.time}" filterMatchMode="contains">
+						<h:outputText value="#{livro.dataLancamento.time}">
+							<f:convertDateTime pattern="dd/MM/yyy HH:mm" />
+							<!-- timeZone="America/Sao_Paulo" -->
+						</h:outputText>
+					</p:column>
+					<!--CARREGANDO DADOS PARA O TEXT BOX E PERMITE ALTERAÇÂO  -->
+					<p:column>
+						<f:facet name="header">Alterar</f:facet>
+						
+						 <p:commandButton style="margin:5px" icon="fa fa-fw fa-edit" update=":livro">
+							<f:setPropertyActionListener target="#{livroBean.livro}" value="#{livro}" /> <!-- esta tag  -->
+						</p:commandButton>
+					</p:column>
+					<!--EFETUA REMOÇÃO DO LIVRO  -->
+					<p:column  >
+						<f:facet name="header">Remover</f:facet>
+							 <p:commandButton style="margin:10px" icon="fa fa-fw fa-trash" action="#{livroBean.remover(livro)}" update="tabelaDeLivros"></p:commandButton> 
+<!-- 						<p:commandButton update="@form" process="@this"  actionListener="#{livroBean.remover(livro)}" icon="fa fa-fw fa-remove" />
+ -->					</p:column>
+				</p:dataTable>
+			
+		</h:form>
+	</ui:define>
+	<ui:define name="rodape">
+		<br />
+		Cadastro de Livro - 
+	</ui:define>
+</ui:composition>
+
+</html>

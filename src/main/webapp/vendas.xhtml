@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+
+<ui:composition template="_template.xhtml">
+
+	<ui:define name="titulo">
+		<p:outputPanel>Vendas</p:outputPanel>
+	</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="venda">
+			<p:messages id="messages"/>
+			<p:fieldset legend="Dados das Vendas" >
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Selecione um livro: " for="livro"/>
+					
+					<p:selectOneMenu  value="#{vendasBean.livroId}" id="livro" required="true" >
+						<f:selectItems value="#{vendasBean.livros}" var="livro"
+							itemLabel="#{livro.titulo}" itemValue="#{livro.id}"/>
+						<!-- <f:ajax event="valueChange" listener="#{vendasBean.salvaLivro}"/> -->
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Ano da venda: " for="ano"/>
+					<p:selectOneMenu  value="#{vendasBean.venda.ano}" id="ano" required="true">
+						<f:selectItem itemLabel="2016" itemValue="2016" />
+			            <f:selectItem itemLabel="2017" itemValue="2017" />
+			            <f:selectItem itemLabel="2018" itemValue="2018" />
+			            <f:selectItem itemLabel="2019" itemValue="2019" />
+						<f:selectItem itemLabel="2020" itemValue="2020" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Quantidade: " for="quantidade" /> 
+					<p:inputNumber id="quantidade" value="#{vendasBean.venda.quantidade}" decimalPlaces="0"
+						required="true" requiredMessage="É necessário digitar a quantidade" >
+						<f:ajax event="blur" render="messages"/>
+					</p:inputNumber>
+					
+					
+					<p:commandButton value="Gravar venda" action="#{vendasBean.gravarVenda}" process="@form" update="@form :grafico" />
+				</h:panelGrid>
+			</p:fieldset>
+			</h:form>
+			<br/>
+			<h:form id="grafico">
+				<p:fieldset legend="Gráfico das vendas">
+				 		<h:outputText rendered="#{empty vendasBean.buscaVendas}" value="Nenhum dado a ser exibido" style="margin:500px"/>
+					<p:chart  type="bar" model="#{vendasBean.vendasModel}" style="height:300px"  />
+				</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
