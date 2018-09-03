@@ -11,4 +11,18 @@ Caso necessário para facilitar, poderá ser excecutadas as linhas no MySql para
 
 INSERT INTO Usuario VALUES(1, "teste@hotmail.com", 1234);
 
+# Certificado Alura
+
+Java e JSF I: Sua aplicação web com JSF2
+
+https://cursos.alura.com.br/user/thiagogomes19/course/jsf/certificate
+
+Java e JSF 2 - II: Componentes ricos com Primefaces
+
+https://cursos.alura.com.br/user/thiagogomes19/course/jsf-primefaces/certificate
+
+Java e JSF 2 - III: Integração com CDI
+
+https://cursos.alura.com.br/user/thiagogomes19/course/jsf-cdi/certificate
+
 
