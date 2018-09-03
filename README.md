@@ -15,14 +15,14 @@ INSERT INTO Usuario VALUES(1, "teste@hotmail.com", 1234);
 
 Java e JSF I: Sua aplicação web com JSF2
 
-https://cursos.alura.com.br/user/thiagogomes19/course/jsf/certificate
+https://cursos.alura.com.br/certificate/967a6bde-31af-451c-b1e1-674b13522952
 
 Java e JSF 2 - II: Componentes ricos com Primefaces
 
-https://cursos.alura.com.br/user/thiagogomes19/course/jsf-primefaces/certificate
+https://cursos.alura.com.br/certificate/fcbfac6d-bd8e-4156-b9cc-b03b4bb29a71
 
 Java e JSF 2 - III: Integração com CDI
 
-https://cursos.alura.com.br/user/thiagogomes19/course/jsf-cdi/certificate
+https://cursos.alura.com.br/certificate/7d39cae4-ba9f-4147-a22b-c8be8438eda9
 
 
